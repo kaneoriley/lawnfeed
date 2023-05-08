@@ -5,12 +5,11 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Binder
 import android.os.IBinder
 import android.os.Parcel
-import app.lawnchair.lawnfeed.Manifest
 
 class TransactProxy(private val target: IBinder, private val context: Context) : Binder() {
 
     private val permissionGranted by lazy {
-        context.checkCallingPermission(Manifest.permission.CONNECT_SERVICE) == PERMISSION_GRANTED }
+        context.checkCallingPermission("me.oriley.swagfeed.CONNECT_SERVICE") == PERMISSION_GRANTED }
     private val allowed by lazy { permissionGranted || callingPackage in allowedPackages }
     private val callingPackage get() = context.packageManager.getNameForUid(getCallingUid())
 
@@ -27,9 +26,7 @@ class TransactProxy(private val target: IBinder, private val context: Context) :
     companion object {
         @JvmStatic
         val allowedPackages = setOf(
-                "app.lawnchair",
-                "ch.deletescape.lawnchair.plah",
-                "ch.deletescape.lawnchair"
+                "me.oriley.swaglauncher",
         )
     }
 }

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 final def commitHash = { ->
     final def stdout = new ByteArrayOutputStream()
@@ -10,48 +11,71 @@ final def commitHash = { ->
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    compileSdk 33
 
     defaultConfig {
-        applicationId "app.lawnchair.lawnfeed"
+        namespace "me.oriley.swagfeed"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 33
 
         versionCode 1
-        versionName "3.0+${commitHash()}"
+        versionName "1.0+${commitHash()}"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "Lawnfeed ${variant.versionName}.apk"
+            outputFileName = "SwagFeed ${variant.versionName}.apk"
+        }
+    }
+
+    final def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def releaseSigning = signingConfigs.debug
+    if (keystorePropertiesFile.exists()) {
+        final def keystoreProperties = new Properties()
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+        releaseSigning = signingConfigs.create("release") {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile rootProject.file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
         }
     }
 
     buildTypes {
         debug {
+            debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig releaseSigning
         }
 
         release {
+            debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig releaseSigning
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled = true
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.core:core:1.0.2"
+    implementation "androidx.core:core:1.10.0"
     implementation('com.googlecode.json-simple:json-simple:1.1.1') {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
     implementation project(':launcherclient')
+    // https://github.com/google/desugar_jdk_libs/blob/master/CHANGELOG.md
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 }
-
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'

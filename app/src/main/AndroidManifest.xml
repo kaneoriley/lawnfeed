@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.lawnchair.lawnfeed">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Let's break some rules... -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <permission-group android:name="me.oriley.swagfeed.CONNECT_SERVICE"
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_lawnchair"/>
+
+    <queries>
+        <package android:name="com.google.android.googlequicksearchbox" />
+    </queries>
 
     <permission
-        android:name="app.lawnchair.lawnfeed.CONNECT_SERVICE"
-        android:label="Connect to Lawnfeed service"
-        android:permissionGroup="app.lawnchair.lawnfeed.CONNECT_SERVICE"
+        android:name="me.oriley.swagfeed.CONNECT_SERVICE"
+        android:label="Connect to SwagFeed service"
+        android:permissionGroup="me.oriley.swagfeed.CONNECT_SERVICE"
         android:protectionLevel="signature" />
 
     <application
@@ -27,31 +27,13 @@
             android:enabled="true"
             android:exported="true" />
 
-        <service android:name="amirz.aidlbridge.BridgeService">
+        <service android:name="amirz.aidlbridge.BridgeService" android:exported="true">
             <intent-filter>
                 <action android:name="com.android.launcher3.WINDOW_OVERLAY" />
                 <data android:scheme="app" />
             </intent-filter>
         </service>
 
-        <!-- Required for Lawnfeed updater -->
-        <receiver
-            android:name=".receivers.UpdateReceiver" />
-        <activity android:name=".PermissionActivity"
-            android:theme="@style/Theme.Transparent"
-            android:autoRemoveFromRecents="true"
-            android:launchMode="singleTask"
-            android:alwaysRetainTaskState="false">
-        </activity>
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="app.lawnchair.lawnfeed.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
     </application>
 
 </manifest>

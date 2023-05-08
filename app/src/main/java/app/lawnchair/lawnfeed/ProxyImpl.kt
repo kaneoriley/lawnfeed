@@ -13,7 +13,6 @@ import app.lawnchair.launcherclient.ILauncherClientProxyCallback
 import app.lawnchair.launcherclient.LauncherClientProxyConnection
 import app.lawnchair.launcherclient.WindowLayoutParams
 import app.lawnchair.lawnfeed.bridge.TransactProxy
-import app.lawnchair.lawnfeed.updater.Updater
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 
@@ -35,10 +34,10 @@ class ProxyImpl(val context: Context) : ILauncherClientProxy.Stub() {
                 return serviceStatus
 
             if (sApplicationConnection != null && sApplicationConnection?.packageName != serviceIntent.`package`)
-                context.unbindService(sApplicationConnection)
+                context.unbindService(sApplicationConnection!!)
 
             if (sApplicationConnection == null) {
-                sApplicationConnection = AppServiceConnection(serviceIntent.`package`)
+                sApplicationConnection = AppServiceConnection(serviceIntent.`package`!!)
 
                 if (!connectSafely(context, sApplicationConnection!!, Context.BIND_WAIVE_PRIORITY)) {
                     sApplicationConnection = null
@@ -131,6 +130,7 @@ class ProxyImpl(val context: Context) : ILauncherClientProxy.Stub() {
     }
 
     override fun onQsbClick(intent: Intent?) {
+        if (intent == null) return
         enforcePermission()
         context.sendOrderedBroadcast(intent, null, object : BroadcastReceiver() {
 
@@ -170,7 +170,6 @@ class ProxyImpl(val context: Context) : ILauncherClientProxy.Stub() {
         allowed = callingPackage in TransactProxy.allowedPackages
         enforcePermission()
         proxyCallback = callback
-        Updater.checkUpdate(context)
         ProxyImpl.getVersion(context)
         return version
     }
@@ -251,7 +250,7 @@ class ProxyImpl(val context: Context) : ILauncherClientProxy.Stub() {
         if (serviceConnected)
             context.unbindService(serviceConnection)
         if (sApplicationConnection != null)
-            context.unbindService(sApplicationConnection)
+            context.unbindService(sApplicationConnection!!)
         sApplicationConnection = null
     }
 }
