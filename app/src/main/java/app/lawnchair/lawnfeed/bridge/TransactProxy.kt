@@ -27,6 +27,8 @@ class TransactProxy(private val target: IBinder, private val context: Context) :
         @JvmStatic
         val allowedPackages = setOf(
                 "me.oriley.swaglauncher",
+                "app.lawnchair.lennox",
+                "app.lawnchair.play.lennox",
         )
     }
 }
